@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from schemas.shared import SharedCreate, SharedResponse
 from crud.shared import create_shared, get_shared_by_id, delete_shared
-from dependencies import get_db
+from database import get_db
 
 router = APIRouter(prefix="/shared", tags=["Shared"])
 

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from schemas.group import GroupCreate, GroupResponse, GroupUpdate
 from crud.group import create_group, get_group_by_id, update_group, delete_group
-from dependencies import get_db
+from database import get_db
 
 router = APIRouter(prefix="/groups", tags=["Groups"])
 

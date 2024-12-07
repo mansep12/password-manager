@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from schemas.password import PasswordCreate, PasswordResponse, PasswordUpdate
 from crud.password import create_password, get_password_by_id, update_password, delete_password
-from dependencies import get_db
+from database import get_db
 
 router = APIRouter(prefix="/passwords", tags=["Passwords"])
 

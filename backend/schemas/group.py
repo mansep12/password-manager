@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import Optional
 from datetime import datetime
 
 # Schema for group creation
@@ -13,7 +13,7 @@ class GroupResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Schema for group update
 class GroupUpdate(BaseModel):
