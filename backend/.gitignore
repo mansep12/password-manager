@@ -1,0 +1,44 @@
+# Python general
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environment
+env/
+venv/
+.venv/
+
+# Configuration files
+.env
+.env.*
+
+# Database files (SQLite or others)
+*.db
+*.sqlite3
+test.db
+
+# Logs
+*.log
+logs/
+debug.log
+
+# IDE/Editor-specific files
+.vscode/
+.idea/
+*.swp
+
+# Deployment files
+*.dockerignore
+Dockerfile
+.docker/
+
+# Node.js dependencies (if applicable for your frontend)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Static/Build files (if applicable)
+dist/
+build/
