@@ -7,7 +7,7 @@ from schemas.user import UserCreate, UserResponse, UserUpdate, Token
 from crud.user import create_user, get_user_by_email, get_user_by_id, update_user, delete_user, authenticate_user, create_access_token, get_current_user
 from database import get_db
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 
 router = APIRouter(prefix="/users", tags=["Users"])
 

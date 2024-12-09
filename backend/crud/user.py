@@ -16,7 +16,7 @@ SECRET_KEY = "d19033e439ca02d1c5f2df831414e887ef2c04aa9c918c1f6c8e264635bbc3f8"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 
 
 def create_user(db: Session, user: UserCreate) -> User:
