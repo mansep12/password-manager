@@ -22,7 +22,7 @@ const Login = () => {
       });
       localStorage.setItem('access_token', response.data.access_token);
       // Redirecciona a la ruta principal o a la que requieras
-      window.location.href = '/';
+      window.location.href = '/table';
     } catch (error) {
       console.log(error.message);
       console.log(`${baseUrl}/users/token`);
