@@ -13,28 +13,30 @@ import jwt
 
 SECRET_KEY = "d19033e439ca02d1c5f2df831414e887ef2c04aa9c918c1f6c8e264635bbc3f8"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30 
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 def create_user(db: Session, user: UserCreate) -> User:
     hashed_password = pwd_context.hash(user.password)
 
-    new_user = User(email=user.email, password=user.password, name=user.name)
+    new_user = User(email=user.email, password=hashed_password, name=user.name)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return new_user
 
+
 def get_user_by_email(db: Session, email: str) -> Optional[User]:
     statement = select(User).where(User.email == email)
-    result = db.execute(statement)            
-    return result.scalars().first()   
+    result = db.execute(statement)
+    return result.scalars().first()
 
 
 def get_user_by_id(db: Session, user_id: int) -> Optional[User]:
     statement = select(User).where(User.id == user_id)
-    result = db.execute(statement)          
+    result = db.execute(statement)
     return result.scalars().first()
 
 
@@ -60,8 +62,12 @@ def delete_user(db: Session, user_id: int) -> bool:
 
 def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     user = get_user_by_email(db, email)
+    print("FJKLDJKLDFSDFS", user)
     if not user:
         return None
+    print(password)
+    print(user.password)
+    print(pwd_context.hash(password))
     if not pwd_context.verify(password, user.password):
         return None
     return user
