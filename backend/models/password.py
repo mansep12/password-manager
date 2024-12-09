@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List
 
 class Password(SQLModel, table=True):
-    id: str = Field(default=None, primary_key=True)
+    id: int = Field(default=None, primary_key=True)
     name: str  # Descriptive name
     url: str = None  # Associated URL (optional, e.g., "https://gmail.com")
     username: str = None  # Username associated with this password

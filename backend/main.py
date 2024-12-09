@@ -10,6 +10,14 @@ app.include_router(group.router)
 app.include_router(password.router)
 app.include_router(shared.router)
 # Initialize database
+
+from models.user import User
+from models.group import Group
+from models.password import Password
+from models.group_user import GroupUser
+from models.shared import Shared
+
+
 @app.on_event("startup")
 def on_startup():
     SQLModel.metadata.create_all(bind=engine)  # Automatically create tables

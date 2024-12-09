@@ -3,7 +3,7 @@ from typing import List
 from datetime import datetime
 
 class Group(SQLModel, table=True):
-    id: str = Field(default=None, primary_key=True)
+    id: int = Field(default=None, primary_key=True)
     name: str  # Group name
     created_at: datetime = Field(default_factory=datetime.utcnow)
 

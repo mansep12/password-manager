@@ -8,7 +8,7 @@ class GroupCreate(BaseModel):
 
 # Schema for group response
 class GroupResponse(BaseModel):
-    id: str
+    id: int
     name: str
     created_at: datetime
 

@@ -11,7 +11,7 @@ class PasswordCreate(BaseModel):
 
 # Schema for password response
 class PasswordResponse(BaseModel):
-    id: str
+    id: int
     name: str
     url: Optional[HttpUrl]
     username: Optional[str]
