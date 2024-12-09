@@ -39,14 +39,15 @@ const PasswordTable = () => {
     const password = localStorage.getItem("password")
     const key = await deriveKeyAESCBC(password, salt)
     const { ciphertext, iv } = await encryptAESCBC(formData.encrypted_password, key);
-    const ciphertextBase64 =  ciphertext.reduce((acc, byte) => acc + String.fromCharCode(byte), "");
-    const data = { ...formData, encrypted_password: "hola"}
+    const ciphertextBase64 = ciphertext.reduce((acc, byte) => acc + String.fromCharCode(byte), "");
+    console.log(ciphertextBase64)
+    const data = { ...formData, encrypted_password: ciphertextBase64 }
     console.log(data)
     try {
       const token = localStorage.getItem('access_token');
       await axios.post(
         `${baseUrl}/passwords/`,
-        formData,
+        data,
         {
           headers: {
             Authorization: `Bearer ${token}`,
