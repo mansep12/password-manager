@@ -2,6 +2,7 @@ from sqlmodel import SQLModel, Field, Relationship
 from typing import List
 from datetime import datetime
 
+
 class Group(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
     name: str  # Group name
