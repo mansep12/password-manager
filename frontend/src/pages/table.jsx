@@ -23,14 +23,13 @@ const PasswordTable = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(response.data)
       for (const password of response.data) {
         const curr_password = localStorage.getItem("password")
-        if (!curr_password) {
-          throw new Error("No password found in localStorage.");
-        }
         const key = await deriveKeyAESCBC(curr_password, hexToArrayBuffer(password.salt));
+        console.log(hexToArrayBuffer(password.iv));
         password.password = await decryptAESCBC(
-          password.encrypted_password,
+          hexToArrayBuffer(password.encrypted_password),
           key,
           hexToArrayBuffer(password.iv),
         )
