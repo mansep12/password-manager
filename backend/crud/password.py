@@ -9,7 +9,7 @@ def create_password(db: Session, password: PasswordCreate, user_id = int) -> Pas
         url=password.url,
         username=password.username,
         encrypted_password=password.encrypted_password,
-        user_id=password.user_id,
+        user_id= user_id,
     )
     db.add(new_password)
     db.commit()
