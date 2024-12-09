@@ -42,7 +42,8 @@ def delete_password_endpoint(password_id: str, db: Session = Depends(get_db)):
     return
 
 
-@router.get("/passwords", response_model=List[PasswordResponse])
-def list_passwords_endpoint(user_id: int, db: Session = Depends(get_db)):
-    passwords = list_passwords(db, user_id)
+@router.get("/list", response_model=List[PasswordResponse])
+def list_passwords_endpoint(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    print("HFDJKSHJKFDSHJKFDSHFJKDSFJDHKS")
+    passwords = list_passwords(db, current_user.id)
     return passwords
