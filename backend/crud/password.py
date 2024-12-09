@@ -6,7 +6,7 @@ from typing import Optional
 def create_password(db: Session, password: PasswordCreate, user_id = int) -> Password:
     new_password = Password(
         name=password.name,
-        url=password.url,
+        url=str(password.url) if password.url else None,
         username=password.username,
         encrypted_password=password.encrypted_password,
         user_id= user_id,
