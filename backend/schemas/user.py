@@ -2,13 +2,13 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime
 
-# Schema for user creation
+
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
     name: str
 
-# Schema for user response
+
 class UserResponse(BaseModel):
     id: str
     email: EmailStr
@@ -18,8 +18,17 @@ class UserResponse(BaseModel):
     class Config:
         from_attributes = True
 
-# Schema for user update
+
 class UserUpdate(BaseModel):
     email: Optional[EmailStr]
     name: Optional[str]
     password: Optional[str]
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    user_id: str | None = None
