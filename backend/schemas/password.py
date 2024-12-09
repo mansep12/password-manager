@@ -8,6 +8,7 @@ class PasswordCreate(BaseModel):
     url: Optional[HttpUrl] = None  # Optional URL for the password's related service
     username: Optional[str] = None  # Username associated with this password
     encrypted_password: str  # Encrypted password
+    user_id: int
 
 # Schema for password response
 class PasswordResponse(BaseModel):

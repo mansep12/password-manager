@@ -9,7 +9,7 @@ class Password(SQLModel, table=True):
     username: str = None  # Username associated with this password
     encrypted_password: str  # Reversibly encrypted password
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    user_id: str = Field(default=None, foreign_key="user.id")
+    user_id: int = Field(default=None, foreign_key="user.id")
 
     user: "User" = Relationship(back_populates="passwords")
     shared_with: List["Shared"] = Relationship(back_populates="password")

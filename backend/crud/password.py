@@ -37,3 +37,8 @@ def delete_password(db: Session, password_id: str) -> bool:
     db.delete(password)
     db.commit()
     return True
+
+def list_passwords(db: Session, user_id: int):
+    statement = select(Password).where(Password.user_id == user_id)
+    results = db.exec(statement)
+    return results.all()

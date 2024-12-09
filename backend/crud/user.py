@@ -62,12 +62,8 @@ def delete_user(db: Session, user_id: int) -> bool:
 
 def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     user = get_user_by_email(db, email)
-    print("FJKLDJKLDFSDFS", user)
     if not user:
         return None
-    print(password)
-    print(user.password)
-    print(pwd_context.hash(password))
     if not pwd_context.verify(password, user.password):
         return None
     return user
