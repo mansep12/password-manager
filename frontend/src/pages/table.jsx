@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { deriveKeyAESCBC, encryptAESCBC, arrayBufferToHex, hexToArrayBuffer } from '../encryptionAESCBC';
+import { deriveKeyAESCBC, encryptAESCBC, arrayBufferToHex, hexToArrayBuffer, decryptAESCBC } from '../encryptionAESCBC';
 import { generateRandomPassword } from '../passwordGeneration';
 
 const PasswordTable = () => {
@@ -23,6 +23,18 @@ const PasswordTable = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      for (const password of response.data) {
+        const curr_password = localStorage.getItem("password")
+        if (!curr_password) {
+          throw new Error("No password found in localStorage.");
+        }
+        const key = await deriveKeyAESCBC(curr_password, hexToArrayBuffer(password.salt));
+        password.password = await decryptAESCBC(
+          password.encrypted_password,
+          key,
+          hexToArrayBuffer(password.iv),
+        )
+      };
       setPasswords(response.data);
     } catch (error) {
       console.error('Error al obtener contraseñas:', error.message);
@@ -45,7 +57,6 @@ const PasswordTable = () => {
       salt: arrayBufferToHex(salt),
       iv: arrayBufferToHex(iv)
     }
-    console.log(data)
     try {
       const token = localStorage.getItem('access_token');
       await axios.post(
@@ -100,7 +111,7 @@ const PasswordTable = () => {
                 </a>
               </td>
               <td>{password.username}</td>
-              <td>{password.encrypted_password}</td>
+              <td>{password.password}</td>
             </tr>
           ))}
         </tbody>

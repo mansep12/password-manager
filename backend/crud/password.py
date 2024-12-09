@@ -11,6 +11,8 @@ def create_password(db: Session, password: PasswordCreate, user_id: int) -> Pass
         username=password.username,
         encrypted_password=password.encrypted_password,
         user_id=user_id,
+        salt=password.salt,
+        iv=password.iv,
     )
     db.add(new_password)
     db.commit()

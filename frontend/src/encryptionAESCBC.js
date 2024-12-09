@@ -62,11 +62,18 @@ export function arrayBufferToHex(uint8Array) {
 }
 
 export function hexToArrayBuffer(hex) {
-  const uint8Array = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < uint8Array.length; i++) {
-    uint8Array[i] = parseInt(hex.substr(i * 2, 2), 16);
+  // Ensure the string has an even length (each pair represents one byte)
+  if (hex.length % 2 !== 0) {
+    throw new Error('Invalid hex string');
   }
-  return uint8Array.buffer;
+
+  const uint8Array = new Uint8Array(hex.length / 2);
+
+  for (let i = 0; i < hex.length; i += 2) {
+    uint8Array[i / 2] = parseInt(hex.substr(i, 2), 16);
+  }
+
+  return uint8Array;
 }
 
 export default { deriveKeyAESCBC, encryptAESCBC, decryptAESCBC }
