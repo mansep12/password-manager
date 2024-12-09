@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 from schemas.user import UserCreate, UserResponse, UserUpdate, Token
-from crud.user import create_user, get_user_by_email, get_user_by_id, update_user, delete_user, authenticate_user, create_access_token
+from crud.user import create_user, get_user_by_email, get_user_by_id, update_user, delete_user, authenticate_user, create_access_token, get_current_user
 from database import get_db
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
@@ -63,8 +63,8 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
-# @router.get("/users/me/", response_model=UserResponse)
+# @router.get("/passwords/", response_model=UserResponse)
 # async def read_users_me(
-#     current_user: Annotated[UserResponse, Depends(get_current_active_user)],
+#     current_user: Annotated[UserResponse, Depends(get_current_user)],
 # ):
 #     return current_user

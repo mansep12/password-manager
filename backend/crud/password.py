@@ -3,7 +3,7 @@ from models.password import Password
 from schemas.password import PasswordCreate, PasswordUpdate
 from typing import Optional
 
-def create_password(db: Session, password: PasswordCreate) -> Password:
+def create_password(db: Session, password: PasswordCreate, user_id = int) -> Password:
     new_password = Password(
         name=password.name,
         url=password.url,

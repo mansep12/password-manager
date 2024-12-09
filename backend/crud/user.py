@@ -4,6 +4,7 @@ from sqlmodel import Session, select
 from models.user import User
 from schemas.user import UserCreate, UserUpdate, Token, TokenData
 from typing import Optional
+from database import get_db
 
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
@@ -80,7 +81,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
