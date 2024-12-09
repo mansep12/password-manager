@@ -8,6 +8,8 @@ class Password(SQLModel, table=True):
     url: str = None  # Associated URL (optional, e.g., "https://gmail.com")
     username: str = None  # Username associated with this password
     encrypted_password: str  # Reversibly encrypted password
+    salt: str
+    iv: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
     user_id: int = Field(default=None, foreign_key="user.id")
 

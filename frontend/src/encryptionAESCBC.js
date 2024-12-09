@@ -57,4 +57,16 @@ export async function decryptAESCBC(ciphertext, key, iv) {
   return new TextDecoder().decode(plaintextBuffer);
 }
 
+export function arrayBufferToHex(uint8Array) {
+  return uint8Array.reduce((acc, byte) => acc + byte.toString(16).padStart(2, "0"), "");
+}
+
+export function hexToArrayBuffer(hex) {
+  const uint8Array = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < uint8Array.length; i++) {
+    uint8Array[i] = parseInt(hex.substr(i * 2, 2), 16);
+  }
+  return uint8Array.buffer;
+}
+
 export default { deriveKeyAESCBC, encryptAESCBC, decryptAESCBC }

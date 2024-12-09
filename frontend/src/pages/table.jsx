@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { deriveKeyAESCBC, encryptAESCBC } from '../encryptionAESCBC';
+import { deriveKeyAESCBC, encryptAESCBC, arrayBufferToHex, hexToArrayBuffer } from '../encryptionAESCBC';
 import { generateRandomPassword } from '../passwordGeneration';
 
 const PasswordTable = () => {
@@ -39,9 +39,12 @@ const PasswordTable = () => {
     const password = localStorage.getItem("password")
     const key = await deriveKeyAESCBC(password, salt)
     const { ciphertext, iv } = await encryptAESCBC(formData.encrypted_password, key);
-    const ciphertextBase64 = ciphertext.reduce((acc, byte) => acc + String.fromCharCode(byte), "");
-    console.log(ciphertextBase64)
-    const data = { ...formData, encrypted_password: ciphertextBase64 }
+    const data = {
+      ...formData,
+      encrypted_password: arrayBufferToHex(ciphertext),
+      salt: arrayBufferToHex(salt),
+      iv: arrayBufferToHex(iv)
+    }
     console.log(data)
     try {
       const token = localStorage.getItem('access_token');

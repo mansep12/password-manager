@@ -2,14 +2,16 @@ from pydantic import BaseModel, HttpUrl
 from typing import Optional
 from datetime import datetime
 
-# Schema for password creation
+
 class PasswordCreate(BaseModel):
     name: str
-    url: Optional[HttpUrl] = None  # Optional URL for the password's related service
-    username: Optional[str] = None  # Username associated with this password
-    encrypted_password: str  # Encrypted password
+    url: Optional[HttpUrl] = None
+    username: Optional[str] = None
+    encrypted_password: str
+    salt: str
+    iv: str
 
-# Schema for password response
+
 class PasswordResponse(BaseModel):
     id: int
     name: str
@@ -17,14 +19,17 @@ class PasswordResponse(BaseModel):
     username: Optional[str]
     encrypted_password: str
     created_at: datetime
+    salt: str
+    iv: str
 
     class Config:
         from_attributes = True
 
-# Schema for password update
+
 class PasswordUpdate(BaseModel):
     name: Optional[str]
     url: Optional[HttpUrl]
     username: Optional[str]
     encrypted_password: Optional[str]
-
+    salt: Optional[str]
+    iv: Optional[str]
