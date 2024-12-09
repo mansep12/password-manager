@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { deriveKeyAESCBC, encryptAESCBC } from '../encryptionAESCBC';
+import { generateRandomPassword } from '../passwordGeneration';
 
 const PasswordTable = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
@@ -9,7 +11,7 @@ const PasswordTable = () => {
     name: '',
     url: '',
     username: '',
-    encrypted_password: '',
+    encrypted_password: generateRandomPassword(20),
   });
   const [error, setError] = useState('');
 
@@ -31,6 +33,15 @@ const PasswordTable = () => {
   const handleCreatePassword = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Aplica la transformación/encriptación
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const password = localStorage.getItem("password")
+    const key = await deriveKeyAESCBC(password, salt)
+    const { ciphertext, iv } = await encryptAESCBC(formData.encrypted_password, key);
+    const ciphertextBase64 =  ciphertext.reduce((acc, byte) => acc + String.fromCharCode(byte), "");
+    const data = { ...formData, encrypted_password: "hola"}
+    console.log(data)
     try {
       const token = localStorage.getItem('access_token');
       await axios.post(
@@ -48,7 +59,7 @@ const PasswordTable = () => {
         name: '',
         url: '',
         username: '',
-        encrypted_password: '',
+        encrypted_password: generateRandomPassword(20),
       });
       fetchPasswords(); // Actualiza la lista después de crear la contraseña
     } catch (error) {
@@ -120,7 +131,7 @@ const PasswordTable = () => {
               style={{ display: 'block', width: '100%', marginBottom: '10px' }}
             />
             <input
-              type="password"
+              type="text"
               placeholder="Contraseña"
               value={formData.encrypted_password}
               onChange={(e) =>

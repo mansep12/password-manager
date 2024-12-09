@@ -21,6 +21,7 @@ const Login = () => {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       });
       localStorage.setItem('access_token', response.data.access_token);
+      localStorage.setItem('password', password);
       // Redirecciona a la ruta principal o a la que requieras
       window.location.href = '/table';
     } catch (error) {
