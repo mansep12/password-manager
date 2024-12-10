@@ -9,6 +9,7 @@ class UserCreate(BaseModel):
     salt: str
     pub_key: str
     encrypted_priv_key: str
+    priv_key_iv: str
 
 
 class UserResponse(BaseModel):
@@ -18,6 +19,7 @@ class UserResponse(BaseModel):
     salt: str
     pub_key: str
     encrypted_priv_key: str
+    priv_key_iv: str
 
     class Config:
         from_attributes = True
@@ -29,6 +31,7 @@ class UserUpdate(BaseModel):
     salt: Optional[str]
     pub_key: Optional[str]
     encrypted_priv_key: Optional[str]
+    priv_key_iv: Optional[str]
 
 
 class Token(BaseModel):

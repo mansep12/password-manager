@@ -86,4 +86,4 @@ export async function importKeyFromBytes(keyBytes) {
   );
 }
 
-export default { deriveKeyAESCBC, encryptAESCBC, decryptAESCBC }
+export default { deriveKeyAESCBC, encryptAESCBC, decryptAESCBC, arrayBufferToHex, hexToArrayBuffer}

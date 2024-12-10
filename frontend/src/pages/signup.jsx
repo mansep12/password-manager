@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { TextField, Button, Box, Typography, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { deriveKeyAESCBC, encryptAESCBC } from '../encryptionAESCBC';
-import { generateKeyPair, exportPublicKey, arrayBufferToHex  } from '../encryptionRSAOAEP';
+import { deriveKeyAESCBC, encryptAESCBC, arrayBufferToHex as arrayBufferToHexAES } from '../encryptionAESCBC';
+import { generateKeyPair, exportPublicKey, arrayBufferToHex, exportPrivateKey  } from '../encryptionRSAOAEP';
 
 const Signup = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
@@ -22,18 +22,23 @@ const Signup = () => {
 
 
     try {
-      // const salt = crypto.getRandomValues(new Uint8Array(16));
-      // formData.salt = arrayBufferToHex(salt)
-      //
-      // const keyPair = await generateKeyPair();
-      // const exportedPubKey = await exportPublicKey(keyPair.publicKey)
-      // const hexPubKey = arrayBufferToHex(exportedPubKey);
-      // console.log("hexPubKey", hexPubKey)
-      // formData.pub_key = exportPublicKey(keyPair.publicKey)
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      formData.salt = arrayBufferToHex(salt)
+      const keyPair = await generateKeyPair();
+      const exportedPubKey = await exportPublicKey(keyPair.publicKey)
+      const hexPubKey = arrayBufferToHex(exportedPubKey);
+      formData.pub_key = hexPubKey;
+      console.log("pub_key", formData.pub_key);
 
-      // const key = await deriveKeyAESCBC(formData.password, salt)
-      // console.log(keyPair.privateKey)
-      // formData.encrypted_priv_key = encryptAESCBC(
+      const exportedPrivKey = await exportPrivateKey(keyPair.privateKey)
+      const hexPrivKey = arrayBufferToHex(exportedPrivKey);
+      const key = await deriveKeyAESCBC(formData.password, salt)
+      const encryptedKeyObject = await encryptAESCBC(hexPrivKey, key);
+      formData.encrypted_priv_key = arrayBufferToHexAES(encryptedKeyObject.ciphertext);
+      console.log("priv", formData.encrypted_priv_key)
+      // formData.encrypted_priv_key = 'string'
+      // formData.pub_key = 'string'
+      formData.priv_key_iv = arrayBufferToHexAES(encryptedKeyObject.iv)
       await axios.post(`${baseUrl}/users/`, formData, {
         headers: { 'Content-Type': 'application/json' },
       });

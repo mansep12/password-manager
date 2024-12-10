@@ -10,6 +10,7 @@ class User(SQLModel, table=True):
     salt: str
     pub_key: str
     encrypted_priv_key: str
+    priv_key_iv: str
 
     passwords: List["Password"] = Relationship(back_populates="user")
     groups: List["GroupUser"] = Relationship(back_populates="user")

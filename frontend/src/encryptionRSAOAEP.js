@@ -85,3 +85,12 @@ export function arrayBufferToHex(buffer) {
     .map(byte => byte.toString(16).padStart(2, '0')) // Convert byte to hex and pad with 0
     .join(''); // Combine into a single string
 }
+
+function hexToArrayBuffer(hexString) {
+  const byteArray = new Uint8Array(
+    hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)) // Split hex into pairs and convert to integers
+  );
+  return byteArray.buffer; // Convert Uint8Array to ArrayBuffer
+}
+
+export default { arrayBufferToHex, hexToArrayBuffer }

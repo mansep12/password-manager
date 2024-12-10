@@ -27,7 +27,8 @@ def create_user(db: Session, user: UserCreate) -> User:
         name=user.name,
         salt=user.salt,
         pub_key=user.pub_key,
-        enctypted_priv_key=user.encrypted_priv_key
+        encrypted_priv_key=user.encrypted_priv_key,
+        priv_key_iv=user.priv_key_iv,
     )
     db.add(new_user)
     db.commit()
