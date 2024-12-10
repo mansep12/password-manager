@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import {
   Table,
@@ -25,8 +25,10 @@ import {
   arrayBufferToHex,
   hexToArrayBuffer,
   decryptAESCBC,
+  importKeyFromBytes,
 } from '../encryptionAESCBC';
 import { generateRandomPassword } from '../passwordGeneration';
+import { KeyContext } from '../keyContext';
 
 const PasswordTable = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
@@ -40,6 +42,8 @@ const PasswordTable = () => {
     encrypted_password: generateRandomPassword(20),
   });
   const [error, setError] = useState('');
+  const { derivedKey } = useContext(KeyContext);
+  const curr_password = localStorage.getItem("password")
 
   const fetchPasswords = async () => {
     try {
@@ -50,7 +54,7 @@ const PasswordTable = () => {
         },
       });
       for (const password of response.data) {
-        const curr_password = localStorage.getItem('password');
+        // const key = localStorage.getItem('key');
         const key = await deriveKeyAESCBC(curr_password, hexToArrayBuffer(password.salt));
         password.password = await decryptAESCBC(
           hexToArrayBuffer(password.encrypted_password),
@@ -70,6 +74,10 @@ const PasswordTable = () => {
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const password = localStorage.getItem('password');
     const key = await deriveKeyAESCBC(password, salt);
+    // const keyBuffer = localStorage.getItem('key');
+    // console.log("keybuffer", keyBuffer);
+    // const key = JSON.parse(keyBuffer);
+    // console.log("key", key);
     const { ciphertext, iv } = await encryptAESCBC(formData.encrypted_password, key);
     const data = {
       ...formData,

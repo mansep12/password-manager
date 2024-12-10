@@ -76,4 +76,14 @@ export function hexToArrayBuffer(hex) {
   return uint8Array;
 }
 
+export async function importKeyFromBytes(keyBytes) {
+  return window.crypto.subtle.importKey(
+    "raw",
+    keyBytes,
+    { name: "AES-CBC" },
+    false,
+    ["encrypt", "decrypt"]
+  );
+}
+
 export default { deriveKeyAESCBC, encryptAESCBC, decryptAESCBC }

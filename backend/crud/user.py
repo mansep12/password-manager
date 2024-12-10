@@ -22,17 +22,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 def create_user(db: Session, user: UserCreate) -> User:
     hashed_password = pwd_context.hash(user.password)
 
-    new_user = User(email=user.email, password=hashed_password, name=user.name)
+    new_user = User(password=hashed_password, name=user.name, salt=user.salt)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return new_user
-
-
-def get_user_by_email(db: Session, email: str) -> Optional[User]:
-    statement = select(User).where(User.email == email)
-    result = db.execute(statement)
-    return result.scalars().first()
 
 
 def get_user_by_id(db: Session, user_id: int) -> Optional[User]:
@@ -67,8 +61,8 @@ def delete_user(db: Session, user_id: int) -> bool:
     return True
 
 
-def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
-    user = get_user_by_email(db, email)
+def authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
+    user = get_user_by_name(db, username)
     if not user:
         return None
     if not pwd_context.verify(password, user.password):

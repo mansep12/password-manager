@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 from schemas.user import UserCreate, UserResponse, UserUpdate, Token
-from crud.user import create_user, get_user_by_email, get_user_by_id, update_user, delete_user, authenticate_user, create_access_token, get_current_user
+from crud.user import create_user, get_user_by_id, get_user_by_name, update_user, delete_user, authenticate_user, create_access_token, get_current_user
+from models.user import User
 from database import get_db
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
@@ -14,9 +15,15 @@ router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.post("/", response_model=UserResponse, status_code=201)
 def create_user_endpoint(user: UserCreate, db: Session = Depends(get_db)):
-    if get_user_by_email(db, user.email):
-        raise HTTPException(status_code=400, detail="Email already registered")
+    if get_user_by_name(db, user.name):
+        raise HTTPException(status_code=400, detail="Username already in use")
     return create_user(db, user)
+
+
+@router.get("/salt")
+def get_salt_endpoint(current_user: User = Depends(get_current_user)):
+    print(current_user)
+    return current_user.salt
 
 
 @router.get("/{user_id}", response_model=UserResponse)

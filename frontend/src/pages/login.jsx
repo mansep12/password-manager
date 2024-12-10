@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { TextField, Button, Box, Typography, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { deriveKeyAESCBC, hexToArrayBuffer } from '../encryptionAESCBC';
+import { KeyContext } from '../keyContext';
 
 const Login = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
@@ -9,6 +11,7 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { derivedKey, setDerivedKey } = useContext(KeyContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,10 +26,20 @@ const Login = () => {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       });
       localStorage.setItem('access_token', response.data.access_token);
-      localStorage.setItem('password', password);
+
+      const salt_response = await axios.get(`${baseUrl}/users/salt`, {
+        headers: {
+          Authorization: `Bearer ${response.data.access_token}`,
+        },
+      });
+      // const salt = hexToArrayBuffer(salt_response.data);
+      // const key = await deriveKeyAESCBC(password, salt);
+      // const keyBuffer = JSON.stringify(key);
+      localStorage.setItem('password', password)
       window.location.href = '/table';
     } catch (error) {
       setError('Usuario o contraseña incorrecta');
+      console.log(error.message);
     }
   };
 

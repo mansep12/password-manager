@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { TextField, Button, Box, Typography, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { arrayBufferToHex } from '../encryptionAESCBC';
 
 const Signup = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
     name: '',
     password: '',
   });
@@ -19,7 +19,10 @@ const Signup = () => {
     setError('');
     setSuccess('');
 
+
     try {
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      formData.salt = arrayBufferToHex(salt)
       await axios.post(`${baseUrl}/users/`, formData, {
         headers: { 'Content-Type': 'application/json' },
       });
@@ -56,15 +59,6 @@ const Signup = () => {
         </Alert>
       )}
       <form onSubmit={handleSubmit}>
-        <TextField
-          fullWidth
-          label="Correo Electrónico"
-          variant="outlined"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          sx={{ mb: 2 }}
-          required
-        />
         <TextField
           fullWidth
           label="Nombre"

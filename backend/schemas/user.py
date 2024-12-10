@@ -4,25 +4,25 @@ from datetime import datetime
 
 
 class UserCreate(BaseModel):
-    email: EmailStr
     password: str
     name: str
+    salt: str
 
 
 class UserResponse(BaseModel):
     id: int
-    email: EmailStr
     name: str
     created_at: datetime
+    salt: str
 
     class Config:
         from_attributes = True
 
 
 class UserUpdate(BaseModel):
-    email: Optional[EmailStr]
     name: Optional[str]
     password: Optional[str]
+    salt: Optional[str]
 
 
 class Token(BaseModel):
