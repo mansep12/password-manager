@@ -3,7 +3,7 @@ import axios from 'axios';
 import { TextField, Button, Box, Typography, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { deriveKeyAESCBC, encryptAESCBC, arrayBufferToHex as arrayBufferToHexAES } from '../encryptionAESCBC';
-import { generateKeyPair, exportPublicKey, arrayBufferToHex, exportPrivateKey  } from '../encryptionRSAOAEP';
+import { generateKeyPair, exportPublicKey, arrayBufferToHex, exportPrivateKey } from '../encryptionRSAOAEP';
 
 const Signup = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
@@ -56,12 +56,18 @@ const Signup = () => {
         mx: 'auto',
         mt: 5,
         p: 4,
-        boxShadow: 3,
-        borderRadius: 2,
-        bgcolor: 'background.paper',
+        boxShadow: 4,
+        borderRadius: 3,
+        bgcolor: 'white',
+        border: '1px solid var(--color-border)',
       }}
     >
-      <Typography variant="h5" align="center" mb={2}>
+      <Typography
+        variant="h5"
+        align="center"
+        mb={2}
+        sx={{ color: 'var(--color-primary)', fontWeight: 'bold' }}
+      >
         Registrarse
       </Typography>
       {error && (
@@ -94,14 +100,27 @@ const Signup = () => {
           sx={{ mb: 2 }}
           required
         />
-        <Button fullWidth variant="contained" color="primary" type="submit">
+        <Button
+          fullWidth
+          variant="contained"
+          sx={{
+            backgroundColor: 'var(--color-primary)',
+            color: '#fff',
+            '&:hover': { backgroundColor: '#003ea8' },
+          }}
+          type="submit"
+        >
           Registrarse
         </Button>
         <Button
           fullWidth
-          variant="contained"
-          color="secondary"
-          sx={{ mt: 2 }}
+          variant="outlined"
+          sx={{
+            mt: 2,
+            borderColor: 'var(--color-secondary)',
+            color: 'var(--color-secondary)',
+            '&:hover': { backgroundColor: 'rgba(40, 167, 69, 0.1)' },
+          }}
           onClick={() => navigate('/')}
         >
           Cancelar

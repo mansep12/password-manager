@@ -47,20 +47,22 @@ const Login = () => {
     <Box
       sx={{
         maxWidth: 400,
-        mx: 'auto', // Centra horizontalmente
-        mt: 10, // Espaciado superior
+        mx: 'auto',
+        mt: 5,
         p: 4,
-        boxShadow: 3,
-        borderRadius: 2,
-        bgcolor: 'white', // Fondo blanco del formulario
+        boxShadow: 4,
+        borderRadius: 3,
+        bgcolor: 'white', // Fondo blanco
         textAlign: 'center',
+        border: '1px solid var(--color-border)', // Borde gris claro
       }}
     >
       <Typography
         variant="h5"
         mb={2}
         sx={{
-          color: '#333', // Cambia el color del texto a gris oscuro
+          color: 'var(--color-primary)', // Azul Primario
+          fontWeight: 'bold',
         }}
       >
         Iniciar Sesión
@@ -88,20 +90,34 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           sx={{ mb: 2 }}
         />
-        <Button fullWidth variant="contained" color="primary" type="submit">
+        <Button
+          fullWidth
+          variant="contained"
+          sx={{
+            backgroundColor: 'var(--color-primary)',
+            color: '#fff',
+            '&:hover': { backgroundColor: '#003ea8' },
+          }}
+          type="submit"
+        >
           Iniciar sesión
         </Button>
         <Button
           fullWidth
-          variant="contained"
-          color="secondary"
-          sx={{ mt: 2 }}
+          variant="outlined"
+          sx={{
+            mt: 2,
+            borderColor: 'var(--color-secondary)',
+            color: 'var(--color-secondary)',
+            '&:hover': { backgroundColor: 'rgba(40, 167, 69, 0.1)' },
+          }}
           onClick={() => navigate('/signup')}
         >
           Registrarse
         </Button>
       </form>
     </Box>
+
   );
 };
 

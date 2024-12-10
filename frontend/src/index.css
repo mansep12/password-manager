@@ -1,10 +1,23 @@
+:root {
+  --color-primary: #0056D6;
+  --color-secondary: #28A745;
+  --color-success: #6CBF40;
+  --color-warning: #FFC107;
+  --color-error: #DC3545;
+  --color-background: #F8F9FA;
+  --color-card-background: #FFFFFF;
+  --color-border: #E9ECEF;
+  --color-selected: #E3F2FD;
+  --color-text-primary: #212529;
+  --color-text-secondary: #6C757D;
+}
 
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
-  background-color: #57a0ff83; /* Color de fondo claro */
-  color: #333; /* Corgb(143, 170, 214) texto predeterminado */
+  font-family: 'Roboto', Arial, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
   display: flex;
   justify-content: center;
   align-items: center;

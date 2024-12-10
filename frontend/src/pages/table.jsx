@@ -129,25 +129,50 @@ const PasswordTable = () => {
         variant="h4"
         align="left"
         gutterBottom
-        sx={{ color: '#333', fontWeight: 'bold', mb: 3 }}
+        sx={{
+          color: 'var(--color-primary)',
+          fontWeight: 'bold',
+          mb: 3,
+        }}
       >
         Lista de Contraseñas
       </Typography>
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 3,
+        }}
+      >
         <Button
           variant="contained"
-          color="primary"
+          sx={{
+            backgroundColor: 'var(--color-primary)',
+            color: '#fff',
+            '&:hover': { backgroundColor: '#003ea8' },
+            textTransform: 'none',
+          }}
           onClick={() => setShowForm(true)}
-          sx={{ textTransform: 'none' }}
         >
           Crear Contraseña
         </Button>
         <Button
           variant="contained"
-          color="secondary"
-          onClick={() => navigate('/share-password')} // Redirige a /share-password
-          sx={{ textTransform: 'none' }}
+          sx={{
+            bgcolor: 'var(--color-success)',
+            color: '#fff',
+            textTransform: 'none',
+            '&:hover': {
+              bgcolor: '#2e7d32',
+            },
+          }}
+          onClick={() => navigate('/share-password')}
         >
           Compartir Contraseñas
         </Button>
@@ -155,7 +180,7 @@ const PasswordTable = () => {
       <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
         <Table>
           <TableHead>
-            <TableRow sx={{ bgcolor: '#f0f0f0' }}>
+            <TableRow sx={{ bgcolor: 'var(--color-selected)' }}>
               <TableCell>Nombre</TableCell>
               <TableCell>URL</TableCell>
               <TableCell>Usuario</TableCell>
@@ -164,10 +189,20 @@ const PasswordTable = () => {
           </TableHead>
           <TableBody>
             {passwords.map((password) => (
-              <TableRow key={password.id}>
+              <TableRow
+                key={password.id}
+                sx={{
+                  '&:hover': { bgcolor: 'rgba(0, 123, 255, 0.1)' },
+                }}
+              >
                 <TableCell>{password.name}</TableCell>
                 <TableCell>
-                  <a href={password.url} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={password.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: 'var(--color-primary)' }}
+                  >
                     {password.url}
                   </a>
                 </TableCell>
@@ -180,7 +215,7 @@ const PasswordTable = () => {
       </TableContainer>
 
       <Dialog open={showForm} onClose={() => setShowForm(false)}>
-        <DialogTitle>Crear Contraseña</DialogTitle>
+        <DialogTitle sx={{ color: 'var(--color-primary)' }}>Crear Contraseña</DialogTitle>
         <DialogContent>
           <TextField
             fullWidth
@@ -214,10 +249,28 @@ const PasswordTable = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowForm(false)} color="secondary">
+          <Button
+            onClick={() => setShowForm(false)}
+            variant="contained"
+            sx={{
+              bgcolor: '#ef5350',
+              color: '#fff',
+              '&:hover': {
+                bgcolor: '#d32f2f',
+              },
+            }}
+          >
             Cancelar
           </Button>
-          <Button onClick={handleCreatePassword} variant="contained" color="primary">
+          <Button
+            onClick={handleCreatePassword}
+            variant="contained"
+            sx={{
+              backgroundColor: 'var(--color-primary)',
+              color: '#fff',
+              '&:hover': { backgroundColor: '#003ea8' },
+            }}
+          >
             Guardar
           </Button>
         </DialogActions>
