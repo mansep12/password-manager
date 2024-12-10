@@ -36,7 +36,7 @@ const Login = () => {
       // const key = await deriveKeyAESCBC(password, salt);
       // const keyBuffer = JSON.stringify(key);
       localStorage.setItem('password', password)
-      window.location.href = '/table';
+      window.location.href = '/password';
     } catch (error) {
       setError('Usuario o contraseña incorrecta');
       console.log(error.message);
