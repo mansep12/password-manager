@@ -14,4 +14,3 @@ class Password(SQLModel, table=True):
     user_id: int = Field(default=None, foreign_key="user.id")
 
     user: "User" = Relationship(back_populates="passwords")
-    shared_with: List["Shared"] = Relationship(back_populates="password")
