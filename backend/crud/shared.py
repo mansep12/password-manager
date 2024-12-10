@@ -5,7 +5,8 @@ from typing import Optional
 
 def create_shared(db: Session, shared: SharedCreate) -> Shared:
     new_shared = Shared(
-        password_id=shared.password_id,
+        owner_username=shared.owner_username,
+        encrypted_password=shared.encrypted_password,
         shared_with_user_id=shared.shared_with_user_id,
         shared_with_group_id=shared.shared_with_group_id,
     )

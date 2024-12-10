@@ -44,18 +44,24 @@ const PasswordTable = () => {
   const [error, setError] = useState('');
   const { derivedKey } = useContext(KeyContext);
   const curr_password = localStorage.getItem("password")
+  const token = localStorage.getItem('access_token');
 
   const fetchPasswords = async () => {
     try {
-      const token = localStorage.getItem('access_token');
       const response = await axios.get(`${baseUrl}/passwords/list`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      const salt_response = await axios.get(`${baseUrl}/users/salt`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const salt = hexToArrayBuffer(salt_response.data)
+      console.log("salt", salt)
       for (const password of response.data) {
-        // const key = localStorage.getItem('key');
-        const key = await deriveKeyAESCBC(curr_password, hexToArrayBuffer(password.salt));
+        const key = await deriveKeyAESCBC(curr_password, salt);
         password.password = await decryptAESCBC(
           hexToArrayBuffer(password.encrypted_password),
           key,
@@ -65,13 +71,20 @@ const PasswordTable = () => {
       setPasswords(response.data);
     } catch (error) {
       setError('No se pudieron cargar las contraseñas.');
+      console.log(error.message);
     }
   };
 
   const handleCreatePassword = async (e) => {
     e.preventDefault();
     setError('');
-    const salt = crypto.getRandomValues(new Uint8Array(16));
+    // const salt = crypto.getRandomValues(new Uint8Array(16));
+    const salt_response = await axios.get(`${baseUrl}/users/salt`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const salt = hexToArrayBuffer(salt_response.data);
     const password = localStorage.getItem('password');
     const key = await deriveKeyAESCBC(password, salt);
     // const keyBuffer = localStorage.getItem('key');

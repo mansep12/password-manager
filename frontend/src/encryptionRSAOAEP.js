@@ -13,7 +13,7 @@ export async function generateKeyPair() {
   return keyPair;
 }
 
-export async function encryptData(publicKey, plaintext) {
+export async function encryptRSA(publicKey, plaintext) {
   const encoder = new TextEncoder();
   const encodedData = encoder.encode(plaintext);
 
@@ -28,7 +28,7 @@ export async function encryptData(publicKey, plaintext) {
   return ciphertext;
 }
 
-export async function decryptData(privateKey, ciphertext) {
+export async function decryptRSA(privateKey, ciphertext) {
   const decryptedData = await window.crypto.subtle.decrypt(
     {
       name: "RSA-OAEP",

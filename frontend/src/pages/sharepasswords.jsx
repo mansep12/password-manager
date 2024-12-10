@@ -21,7 +21,8 @@ import {
   Select,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { importPublicKey, hexToArrayBuffer as hexToArrayBufferRSA} from '../encryptionRSAOAEP';
+import { decryptRSA, encryptRSA, importPublicKey, hexToArrayBuffer as hexToArrayBufferRSA, arrayBufferToHex as arrayBufferToHexRSA } from '../encryptionRSAOAEP';
+import { hexToArrayBuffer as hexToArrayBufferAES, decryptAESCBC, deriveKeyAESCBC } from '../encryptionAESCBC';
 
 const SharedPasswords = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
@@ -34,6 +35,7 @@ const SharedPasswords = () => {
   const [selectedUserIds, setSelectedUserIds] = useState([]); // State to store the selected users
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const curr_password = localStorage.getItem("password")
 
   // Fetch user's own passwords
   const fetchUserPasswords = async () => {
@@ -86,26 +88,57 @@ const SharedPasswords = () => {
     setSuccess('');
     try {
       const token = localStorage.getItem('access_token');
+      const selectedPassword = userPasswords.find(
+        (password) => password.id === selectedPasswordId
+      );
+
+      if (!selectedPassword) {
+        setError('No se encontró la contraseña seleccionada.');
+        return;
+      }
+
+      const encryptedPassword = selectedPassword.encrypted_password;
+      const passwordIv = selectedPassword.iv
       if (selectedUserIds.length === 1) {
+        // get pub key
         const userId = selectedUserIds[0];
         const response = await axios.get(`${baseUrl}/users/pubkey/${userId}`, {});
         const pubKeyHex = response.data;
         const pubKeyArrayBuffer = hexToArrayBufferRSA(pubKeyHex);
         const pubKey = await importPublicKey(pubKeyArrayBuffer);
-         
-        // await axios.post(
-        //   `${baseUrl}/passwords/share`,
-        //   {
-        //     password_id: selectedPasswordId,
-        //     target_user_id: selectedUserIds[0],
-        //   },
-        //   {
-        //     headers: {
-        //       Authorization: `Bearer ${token}`,
-        //       'Content-Type': 'application/json',
-        //     },
-        //   }
-        // );
+
+        // get decrypted password
+        const salt_response = await axios.get(`${baseUrl}/users/salt`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const salt = hexToArrayBufferAES(salt_response.data)
+        const key = await deriveKeyAESCBC(curr_password, salt);
+        const decryptedPassword = await decryptAESCBC(
+          hexToArrayBufferAES(encryptedPassword),
+          key,
+          hexToArrayBufferAES(passwordIv)
+        );
+
+        // encrypt with pubkey
+        const encryptedSharedPasswordBuffer = await encryptRSA(pubKey, decryptedPassword);
+        const encryptedSharedPassword = arrayBufferToHexRSA(encryptedSharedPasswordBuffer);
+        console.log(encryptedSharedPassword);
+
+        await axios.post(
+          `${baseUrl}/passwords`,
+          {
+            encrypted_password: encryptedSharedPassword,
+            shared_with_user_id: userId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
       } else {
         // Share with multiple users
         await axios.post(

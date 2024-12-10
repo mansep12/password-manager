@@ -26,7 +26,6 @@ def list_users_endpoint(db: Session = Depends(get_db), current_user: User = Depe
 
 @router.get("/salt")
 def get_salt_endpoint(current_user: User = Depends(get_current_user)):
-    print(current_user)
     return current_user.salt
 
 @router.get("/pubkey/{user_id}", response_model=str)
