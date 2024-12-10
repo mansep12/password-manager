@@ -49,6 +49,14 @@ def delete_user_endpoint(user_id: str, db: Session = Depends(get_db)):
     return
 
 
+@router.get("/{user_id}/pubkey", response_model=UserResponse)
+def get_user_endpoint(user_id: str, db: Session = Depends(get_db)):
+    user = get_user_by_id(db, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user.pub_key
+
+
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
