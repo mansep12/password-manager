@@ -27,9 +27,10 @@ const SharedPasswords = () => {
   const navigate = useNavigate();
   const [userPasswords, setUserPasswords] = useState([]);
   const [sharedPasswords, setSharedPasswords] = useState([]);
+  const [users, setUsers] = useState([]); // State to store the list of users
   const [showShareForm, setShowShareForm] = useState(false);
   const [selectedPasswordId, setSelectedPasswordId] = useState('');
-  const [shareTarget, setShareTarget] = useState('');
+  const [selectedUserIds, setSelectedUserIds] = useState([]); // State to store the selected users
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -63,25 +64,58 @@ const SharedPasswords = () => {
     }
   };
 
+  // Fetch all users except the current user
+  const fetchUsers = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await axios.get(`${baseUrl}/users/list`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUsers(response.data);
+    } catch (error) {
+      setError('Error al cargar la lista de usuarios.');
+    }
+  };
+
   // Share a password
   const handleSharePassword = async () => {
     setError('');
     setSuccess('');
     try {
       const token = localStorage.getItem('access_token');
-      await axios.post(
-        `${baseUrl}/passwords/share`,
-        {
-          password_id: selectedPasswordId,
-          target: shareTarget, // Could be email or user ID
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+      if (selectedUserIds.length === 1) {
+        // Share with one user
+        await axios.post(
+          `${baseUrl}/passwords/share`,
+          {
+            password_id: selectedPasswordId,
+            target_user_id: selectedUserIds[0],
           },
-        }
-      );
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+      } else {
+        // Share with multiple users
+        await axios.post(
+          `${baseUrl}/passwords/share/multiple`,
+          {
+            password_id: selectedPasswordId,
+            target_user_ids: selectedUserIds,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+      }
       setSuccess('Contraseña compartida exitosamente.');
       setShowShareForm(false);
       fetchSharedPasswords();
@@ -93,6 +127,7 @@ const SharedPasswords = () => {
   useEffect(() => {
     fetchUserPasswords();
     fetchSharedPasswords();
+    fetchUsers(); // Fetch the list of users on component mount
   }, []);
 
   return (
@@ -189,12 +224,33 @@ const SharedPasswords = () => {
               </MenuItem>
             ))}
           </Select>
-          <TextField
+          <Select
             fullWidth
-            label="Compartir con (correo o ID)"
-            value={shareTarget}
-            onChange={(e) => setShareTarget(e.target.value)}
-          />
+            multiple // Allow multiple selection
+            value={selectedUserIds}
+            onChange={(e) => setSelectedUserIds(e.target.value)}
+            displayEmpty
+            sx={{ mb: 2 }}
+          >
+            <MenuItem value="" disabled>
+              Selecciona usuarios
+            </MenuItem>
+            {users.map((user) => (
+                <MenuItem
+                    key={user.id}
+                    value={user.id}
+                    sx={{
+                    bgcolor: selectedUserIds.includes(user.id) ? '#e3f2fd' : 'inherit', // Color azul claro si está seleccionado
+                    '&.Mui-selected': {
+                        bgcolor: '#bbdefb', // Cambia el color cuando el usuario selecciona
+                    }
+                    }}
+                >
+                    {user.name}
+                </MenuItem>
+                ))}
+
+          </Select>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowShareForm(false)} color="secondary">

@@ -1,10 +1,10 @@
 from datetime import timedelta
-from typing import Annotated
+from typing import Annotated, List
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 from schemas.user import UserCreate, UserResponse, UserUpdate, Token
-from crud.user import create_user, get_user_by_id, get_user_by_name, update_user, delete_user, authenticate_user, create_access_token, get_current_user
+from crud.user import create_user, get_user_by_id, get_user_by_name, update_user, delete_user, authenticate_user, create_access_token, list_users, get_current_user
 from models.user import User
 from database import get_db
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -19,6 +19,10 @@ def create_user_endpoint(user: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Username already in use")
     return create_user(db, user)
 
+@router.get("/list", response_model=List[UserResponse])
+def list_users_endpoint(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    users = list_users(db, current_user.id)
+    return users
 
 @router.get("/salt")
 def get_salt_endpoint(current_user: User = Depends(get_current_user)):

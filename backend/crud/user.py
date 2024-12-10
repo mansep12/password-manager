@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, List
 from datetime import datetime, timedelta, timezone
 from sqlmodel import Session, select
 from models.user import User
@@ -40,6 +40,12 @@ def get_user_by_id(db: Session, user_id: int) -> Optional[User]:
     statement = select(User).where(User.id == user_id)
     result = db.execute(statement)
     return result.scalars().first()
+
+def list_users(db: Session, current_user_id: int) -> List[User]:
+
+    statement = select(User).where(User.id != current_user_id)
+    result = db.execute(statement)
+    return result.scalars().all()
 
 
 def get_user_by_name(db: Session, user_name: int) -> Optional[User]:
