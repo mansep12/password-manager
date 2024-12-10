@@ -1,10 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { deriveKeyAESCBC, encryptAESCBC, arrayBufferToHex, hexToArrayBuffer, decryptAESCBC } from '../encryptionAESCBC';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Typography,
+  Alert,
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate
+import {
+  deriveKeyAESCBC,
+  encryptAESCBC,
+  arrayBufferToHex,
+  hexToArrayBuffer,
+  decryptAESCBC,
+} from '../encryptionAESCBC';
 import { generateRandomPassword } from '../passwordGeneration';
 
 const PasswordTable = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate(); // Inicializa useNavigate
   const [passwords, setPasswords] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -23,20 +49,17 @@ const PasswordTable = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data)
       for (const password of response.data) {
-        const curr_password = localStorage.getItem("password")
+        const curr_password = localStorage.getItem('password');
         const key = await deriveKeyAESCBC(curr_password, hexToArrayBuffer(password.salt));
-        console.log(hexToArrayBuffer(password.iv));
         password.password = await decryptAESCBC(
           hexToArrayBuffer(password.encrypted_password),
           key,
-          hexToArrayBuffer(password.iv),
-        )
-      };
+          hexToArrayBuffer(password.iv)
+        );
+      }
       setPasswords(response.data);
     } catch (error) {
-      console.error('Error al obtener contraseñas:', error.message);
       setError('No se pudieron cargar las contraseñas.');
     }
   };
@@ -44,30 +67,24 @@ const PasswordTable = () => {
   const handleCreatePassword = async (e) => {
     e.preventDefault();
     setError('');
-
-    // Aplica la transformación/encriptación
     const salt = crypto.getRandomValues(new Uint8Array(16));
-    const password = localStorage.getItem("password")
-    const key = await deriveKeyAESCBC(password, salt)
+    const password = localStorage.getItem('password');
+    const key = await deriveKeyAESCBC(password, salt);
     const { ciphertext, iv } = await encryptAESCBC(formData.encrypted_password, key);
     const data = {
       ...formData,
       encrypted_password: arrayBufferToHex(ciphertext),
       salt: arrayBufferToHex(salt),
-      iv: arrayBufferToHex(iv)
-    }
+      iv: arrayBufferToHex(iv),
+    };
     try {
       const token = localStorage.getItem('access_token');
-      await axios.post(
-        `${baseUrl}/passwords/`,
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      await axios.post(`${baseUrl}/passwords/`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
       setShowForm(false);
       setFormData({
         name: '',
@@ -75,9 +92,8 @@ const PasswordTable = () => {
         username: '',
         encrypted_password: generateRandomPassword(20),
       });
-      fetchPasswords(); // Actualiza la lista después de crear la contraseña
+      fetchPasswords();
     } catch (error) {
-      console.error('Error al crear contraseña:', error.message);
       setError('No se pudo crear la contraseña.');
     }
   };
@@ -87,81 +103,105 @@ const PasswordTable = () => {
   }, []);
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', marginTop: '50px' }}>
-      <h1>Lista de Contraseñas</h1>
-      {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
-      <button onClick={() => setShowForm(true)}>Crear Contraseña</button>
-      <table border="1" style={{ width: '100%', marginTop: '20px' }}>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>URL</th>
-            <th>Usuario</th>
-            <th>Contraseña</th>
-          </tr>
-        </thead>
-        <tbody>
-          {passwords.map((password) => (
-            <tr key={password.id}>
-              <td>{password.name}</td>
-              <td>
-                <a href={password.url} target="_blank" rel="noopener noreferrer">
-                  {password.url}
-                </a>
-              </td>
-              <td>{password.username}</td>
-              <td>{password.password}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <Box sx={{ maxWidth: 1000, mx: 'auto', my: 4, px: 2 }}>
+      <Typography
+        variant="h4"
+        align="left"
+        gutterBottom
+        sx={{ color: '#333', fontWeight: 'bold', mb: 3 }}
+      >
+        Lista de Contraseñas
+      </Typography>
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setShowForm(true)}
+          sx={{ textTransform: 'none' }}
+        >
+          Crear Contraseña
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => navigate('/share-password')} // Redirige a /share-password
+          sx={{ textTransform: 'none' }}
+        >
+          Compartir Contraseñas
+        </Button>
+      </Box>
+      <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{ bgcolor: '#f0f0f0' }}>
+              <TableCell>Nombre</TableCell>
+              <TableCell>URL</TableCell>
+              <TableCell>Usuario</TableCell>
+              <TableCell>Contraseña</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {passwords.map((password) => (
+              <TableRow key={password.id}>
+                <TableCell>{password.name}</TableCell>
+                <TableCell>
+                  <a href={password.url} target="_blank" rel="noopener noreferrer">
+                    {password.url}
+                  </a>
+                </TableCell>
+                <TableCell>{password.username}</TableCell>
+                <TableCell>{password.password}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-      {showForm && (
-        <div style={{ marginTop: '20px' }}>
-          <h2>Crear Contraseña</h2>
-          <form onSubmit={handleCreatePassword}>
-            <input
-              type="text"
-              placeholder="Nombre"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              style={{ display: 'block', width: '100%', marginBottom: '10px' }}
-              required
-            />
-            <input
-              type="url"
-              placeholder="URL"
-              value={formData.url}
-              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-              style={{ display: 'block', width: '100%', marginBottom: '10px' }}
-            />
-            <input
-              type="text"
-              placeholder="Usuario"
-              value={formData.username}
-              onChange={(e) =>
-                setFormData({ ...formData, username: e.target.value })
-              }
-              style={{ display: 'block', width: '100%', marginBottom: '10px' }}
-            />
-            <input
-              type="text"
-              placeholder="Contraseña"
-              value={formData.encrypted_password}
-              onChange={(e) =>
-                setFormData({ ...formData, encrypted_password: e.target.value })
-              }
-              style={{ display: 'block', width: '100%', marginBottom: '10px' }}
-              required
-            />
-            <button type="submit">Guardar</button>
-            <button type="button" onClick={() => setShowForm(false)}>
-              Cancelar
-            </button>
-          </form>
-        </div>
-      )}
-    </div>
+      <Dialog open={showForm} onClose={() => setShowForm(false)}>
+        <DialogTitle>Crear Contraseña</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="Nombre"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="URL"
+            value={formData.url}
+            onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Usuario"
+            value={formData.username}
+            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Contraseña"
+            value={formData.encrypted_password}
+            onChange={(e) =>
+              setFormData({ ...formData, encrypted_password: e.target.value })
+            }
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowForm(false)} color="secondary">
+            Cancelar
+          </Button>
+          <Button onClick={handleCreatePassword} variant="contained" color="primary">
+            Guardar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 
