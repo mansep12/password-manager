@@ -29,7 +29,7 @@ def get_salt_endpoint(current_user: User = Depends(get_current_user)):
     print(current_user)
     return current_user.salt
 
-@router.get("/pubkey/{user_id}")
+@router.get("/pubkey/{user_id}", response_model=str)
 def get_user_endpoint(user_id: str, db: Session = Depends(get_db)):
     user = get_user_by_id(db, user_id)
     if not user:

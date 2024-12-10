@@ -86,7 +86,7 @@ export function arrayBufferToHex(buffer) {
     .join(''); // Combine into a single string
 }
 
-function hexToArrayBuffer(hexString) {
+export function hexToArrayBuffer(hexString) {
   const byteArray = new Uint8Array(
     hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)) // Split hex into pairs and convert to integers
   );

@@ -21,6 +21,7 @@ import {
   Select,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { importPublicKey, hexToArrayBuffer as hexToArrayBufferRSA} from '../encryptionRSAOAEP';
 
 const SharedPasswords = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
@@ -86,20 +87,25 @@ const SharedPasswords = () => {
     try {
       const token = localStorage.getItem('access_token');
       if (selectedUserIds.length === 1) {
-        // Share with one user
-        await axios.post(
-          `${baseUrl}/passwords/share`,
-          {
-            password_id: selectedPasswordId,
-            target_user_id: selectedUserIds[0],
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+        const userId = selectedUserIds[0];
+        const response = await axios.get(`${baseUrl}/users/pubkey/${userId}`, {});
+        const pubKeyHex = response.data;
+        const pubKeyArrayBuffer = hexToArrayBufferRSA(pubKeyHex);
+        const pubKey = await importPublicKey(pubKeyArrayBuffer);
+         
+        // await axios.post(
+        //   `${baseUrl}/passwords/share`,
+        //   {
+        //     password_id: selectedPasswordId,
+        //     target_user_id: selectedUserIds[0],
+        //   },
+        //   {
+        //     headers: {
+        //       Authorization: `Bearer ${token}`,
+        //       'Content-Type': 'application/json',
+        //     },
+        //   }
+        // );
       } else {
         // Share with multiple users
         await axios.post(
@@ -236,19 +242,19 @@ const SharedPasswords = () => {
               Selecciona usuarios
             </MenuItem>
             {users.map((user) => (
-                <MenuItem
-                    key={user.id}
-                    value={user.id}
-                    sx={{
-                    bgcolor: selectedUserIds.includes(user.id) ? '#e3f2fd' : 'inherit', // Color azul claro si está seleccionado
-                    '&.Mui-selected': {
-                        bgcolor: '#bbdefb', // Cambia el color cuando el usuario selecciona
-                    }
-                    }}
-                >
-                    {user.name}
-                </MenuItem>
-                ))}
+              <MenuItem
+                key={user.id}
+                value={user.id}
+                sx={{
+                  bgcolor: selectedUserIds.includes(user.id) ? '#e3f2fd' : 'inherit', // Color azul claro si está seleccionado
+                  '&.Mui-selected': {
+                    bgcolor: '#bbdefb', // Cambia el color cuando el usuario selecciona
+                  }
+                }}
+              >
+                {user.name}
+              </MenuItem>
+            ))}
 
           </Select>
         </DialogContent>

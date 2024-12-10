@@ -35,13 +35,12 @@ const Signup = () => {
       const key = await deriveKeyAESCBC(formData.password, salt)
       const encryptedKeyObject = await encryptAESCBC(hexPrivKey, key);
       formData.encrypted_priv_key = arrayBufferToHexAES(encryptedKeyObject.ciphertext);
-      console.log("priv", formData.encrypted_priv_key)
-      // formData.encrypted_priv_key = 'string'
-      // formData.pub_key = 'string'
       formData.priv_key_iv = arrayBufferToHexAES(encryptedKeyObject.iv)
+
       await axios.post(`${baseUrl}/users/`, formData, {
         headers: { 'Content-Type': 'application/json' },
       });
+
       setSuccess('Cuenta creada exitosamente. Redirigiendo al inicio de sesión...');
       setTimeout(() => navigate('/'), 2000);
     } catch (error) {
