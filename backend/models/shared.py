@@ -5,6 +5,9 @@ from typing import Optional
 
 class Shared(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
+    name: str
+    url: str
+    username: str
     owner_username: str
     encrypted_password: str
     shared_with_user_id: Optional[int] = Field(default=None, foreign_key="user.id")

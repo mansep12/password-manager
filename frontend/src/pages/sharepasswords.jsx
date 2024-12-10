@@ -46,9 +46,24 @@ const SharedPasswords = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      const salt_response = await axios.get(`${baseUrl}/users/salt`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const salt = hexToArrayBufferAES(salt_response.data)
+      for (const password of response.data) {
+        const key = await deriveKeyAESCBC(curr_password, salt);
+        password.password = await decryptAESCBC(
+          hexToArrayBufferAES(password.encrypted_password),
+          key,
+          hexToArrayBufferAES(password.iv)
+        );
+      }
       setUserPasswords(response.data);
     } catch (error) {
       setError('Error al cargar las contraseñas propias.');
+      console.log(error.message);
     }
   };
 
@@ -56,14 +71,31 @@ const SharedPasswords = () => {
   const fetchSharedPasswords = async () => {
     try {
       const token = localStorage.getItem('access_token');
-      const response = await axios.get(`${baseUrl}/passwords/shared`, {
+      const response = await axios.get(`${baseUrl}/shared/list`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      const salt_response = await axios.get(`${baseUrl}/users/salt`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(salt_response.data)
+      const salt = hexToArrayBufferAES(salt_response.data)
+      for (const password of response.data) {
+        const key = await deriveKeyAESCBC(curr_password, salt);
+        password.password = await decryptAESCBC(
+          hexToArrayBufferAES(password.encrypted_password),
+          key,
+          hexToArrayBufferAES(password.iv)
+        );
+      }
+      console.log(response.data)
       setSharedPasswords(response.data);
     } catch (error) {
       setError('Error al cargar las contraseñas compartidas.');
+      console.log(error.message);
     }
   };
 
@@ -129,6 +161,9 @@ const SharedPasswords = () => {
         await axios.post(
           `${baseUrl}/shared/`,
           {
+            name: selectedPassword.name,
+            url: selectedPassword.url,
+            username: selectedPassword.username,
             encrypted_password: encryptedSharedPassword,
             shared_with_user_id: userId,
           },
@@ -196,6 +231,7 @@ const SharedPasswords = () => {
               <TableCell>Nombre</TableCell>
               <TableCell>URL</TableCell>
               <TableCell>Usuario</TableCell>
+              <TableCell>Contraseña</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -208,6 +244,7 @@ const SharedPasswords = () => {
                   </a>
                 </TableCell>
                 <TableCell>{password.username}</TableCell>
+                <TableCell>{password.password}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -224,20 +261,20 @@ const SharedPasswords = () => {
               <TableCell>Nombre</TableCell>
               <TableCell>URL</TableCell>
               <TableCell>Usuario</TableCell>
-              <TableCell>Compartido Con</TableCell>
+              <TableCell>Contraseña</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {sharedPasswords.map((password) => (
-              <TableRow key={password.id}>
-                <TableCell>{password.name}</TableCell>
+            {sharedPasswords.map((sharedPassword) => (
+              <TableRow key={sharedPassword.id}>
+                <TableCell>{sharedPassword.name}</TableCell>
                 <TableCell>
-                  <a href={password.url} target="_blank" rel="noopener noreferrer">
-                    {password.url}
+                  <a href={sharedPassword.url} target="_blank" rel="noopener noreferrer">
+                    {sharedPassword.url}
                   </a>
                 </TableCell>
-                <TableCell>{password.username}</TableCell>
-                <TableCell>{password.shared_with}</TableCell>
+                <TableCell>{sharedPassword.username}</TableCell>
+                <TableCell>{sharedPassword.password}</TableCell>
               </TableRow>
             ))}
           </TableBody>
