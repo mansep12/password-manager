@@ -4,7 +4,7 @@ from datetime import datetime
 
 # Schema for sharing a password
 class SharedCreate(BaseModel):
-    owner_username: Optional[str]
+    owner_username: Optional[str] = None
     encrypted_password: str
     shared_with_user_id: Optional[int]
     shared_with_group_id: Optional[int] = None  # Share with a group

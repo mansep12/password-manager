@@ -127,7 +127,7 @@ const SharedPasswords = () => {
         console.log(encryptedSharedPassword);
 
         await axios.post(
-          `${baseUrl}/passwords`,
+          `${baseUrl}/shared/`,
           {
             encrypted_password: encryptedSharedPassword,
             shared_with_user_id: userId,
