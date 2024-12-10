@@ -21,7 +21,7 @@ import {
   Select,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { decryptRSA, encryptRSA, importPublicKey, hexToArrayBuffer as hexToArrayBufferRSA, arrayBufferToHex as arrayBufferToHexRSA } from '../encryptionRSAOAEP';
+import { decryptRSA, encryptRSA, importPublicKey, hexToArrayBuffer as hexToArrayBufferRSA, arrayBufferToHex as arrayBufferToHexRSA, importPrivateKey } from '../encryptionRSAOAEP';
 import { hexToArrayBuffer as hexToArrayBufferAES, decryptAESCBC, deriveKeyAESCBC } from '../encryptionAESCBC';
 
 const SharedPasswords = () => {
@@ -76,22 +76,32 @@ const SharedPasswords = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      const priv_key_response = await axios.get(`${baseUrl}/users/priv_key`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const salt_response = await axios.get(`${baseUrl}/users/salt`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(salt_response.data)
+
       const salt = hexToArrayBufferAES(salt_response.data)
+      const password = localStorage.getItem("password")
+      const [encryptedPrivKeyHex, privKeyIvHex] = priv_key_response.data
+      const encryptedPrivKeyBuffer = hexToArrayBufferAES(encryptedPrivKeyHex);
+      const privKeyIv = hexToArrayBufferAES(privKeyIvHex);
+      const key = await deriveKeyAESCBC(password, salt)
+      const privKeyHex = await decryptAESCBC(encryptedPrivKeyBuffer, key, privKeyIv);
+      const privKeyBuffer = await hexToArrayBufferRSA(privKeyHex);
+      const privKey = await importPrivateKey(privKeyBuffer);
       for (const password of response.data) {
-        const key = await deriveKeyAESCBC(curr_password, salt);
-        password.password = await decryptAESCBC(
-          hexToArrayBufferAES(password.encrypted_password),
-          key,
-          hexToArrayBufferAES(password.iv)
+        password.password = await decryptRSA(
+          privKey,
+          hexToArrayBufferRSA(password.encrypted_password)
         );
       }
-      console.log(response.data)
       setSharedPasswords(response.data);
     } catch (error) {
       setError('Error al cargar las contraseñas compartidas.');
