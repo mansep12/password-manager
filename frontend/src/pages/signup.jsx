@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { TextField, Button, Box, Typography, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { arrayBufferToHex } from '../encryptionAESCBC';
+import { deriveKeyAESCBC, encryptAESCBC } from '../encryptionAESCBC';
+import { generateKeyPair, exportPublicKey, arrayBufferToHex  } from '../encryptionRSAOAEP';
 
 const Signup = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
@@ -21,8 +22,18 @@ const Signup = () => {
 
 
     try {
-      const salt = crypto.getRandomValues(new Uint8Array(16));
-      formData.salt = arrayBufferToHex(salt)
+      // const salt = crypto.getRandomValues(new Uint8Array(16));
+      // formData.salt = arrayBufferToHex(salt)
+      //
+      // const keyPair = await generateKeyPair();
+      // const exportedPubKey = await exportPublicKey(keyPair.publicKey)
+      // const hexPubKey = arrayBufferToHex(exportedPubKey);
+      // console.log("hexPubKey", hexPubKey)
+      // formData.pub_key = exportPublicKey(keyPair.publicKey)
+
+      // const key = await deriveKeyAESCBC(formData.password, salt)
+      // console.log(keyPair.privateKey)
+      // formData.encrypted_priv_key = encryptAESCBC(
       await axios.post(`${baseUrl}/users/`, formData, {
         headers: { 'Content-Type': 'application/json' },
       });
@@ -30,6 +41,7 @@ const Signup = () => {
       setTimeout(() => navigate('/'), 2000);
     } catch (error) {
       setError(error.response?.data?.detail || 'Error al crear la cuenta.');
+      console.log(error.message)
     }
   };
 

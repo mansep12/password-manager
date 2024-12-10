@@ -22,7 +22,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 def create_user(db: Session, user: UserCreate) -> User:
     hashed_password = pwd_context.hash(user.password)
 
-    new_user = User(password=hashed_password, name=user.name, salt=user.salt)
+    new_user = User(
+        password=hashed_password,
+        name=user.name,
+        salt=user.salt,
+        pub_key=user.pub_key,
+        enctypted_priv_key=user.encrypted_priv_key
+    )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

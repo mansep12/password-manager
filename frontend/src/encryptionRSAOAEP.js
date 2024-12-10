@@ -41,3 +41,47 @@ export async function decryptData(privateKey, ciphertext) {
   return decoder.decode(decryptedData);
 }
 
+export async function exportPublicKey(publicKey) {
+  const exported = await window.crypto.subtle.exportKey('spki', publicKey);
+  return exported;
+}
+
+export async function importPublicKey(keyBuffer) {
+  return window.crypto.subtle.importKey(
+    "spki",
+    keyBuffer,
+    {
+      name: "RSA-OAEP",
+      hash: { name: "SHA-256" },
+    },
+    true,
+    ["encrypt"]
+  );
+}
+
+export async function exportPrivateKey(privateKey) {
+  const exportedPrivateKey = await window.crypto.subtle.exportKey('pkcs8', privateKey);
+  return exportedPrivateKey;
+}
+
+export async function importPrivateKey(privateKeyBuffer) {
+  const privateKey = await window.crypto.subtle.importKey(
+    'pkcs8',
+    privateKeyBuffer,
+    {
+      name: 'RSA-OAEP',
+      hash: { name: 'SHA-256' },
+    },
+    true,
+    ['decrypt']
+  );
+
+  return privateKey;
+}
+
+export function arrayBufferToHex(buffer) {
+  const bytes = new Uint8Array(buffer);
+  return Array.from(bytes)
+    .map(byte => byte.toString(16).padStart(2, '0')) // Convert byte to hex and pad with 0
+    .join(''); // Combine into a single string
+}

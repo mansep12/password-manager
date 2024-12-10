@@ -8,6 +8,8 @@ class User(SQLModel, table=True):
     name: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
     salt: str
+    pub_key: str
+    encrypted_priv_key: str
 
     passwords: List["Password"] = Relationship(back_populates="user")
     groups: List["GroupUser"] = Relationship(back_populates="user")
